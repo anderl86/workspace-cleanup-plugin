@@ -1,0 +1,47 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
+    <l:layout title="Test">
+      <st:include page="sidepanel.jelly" it="${it.computer}" />
+        <l:main-panel>
+            <h1>${%workspacesOn} ${it.computer.caption}</h1>
+            <table class="sortable pane bigtable" style="align: left; text-align: left;">
+                <tr>
+                    <th>${%workspace}</th>
+                    <th>${%project}</th>
+                    <th>${%boundToSlave}</th>
+                    <th></th>
+                </tr>
+            <j:forEach var="ws" items="${it.workspaces}" varStatus="loop">
+              <tr>
+                <td>${ws.name}</td>
+                <td>
+                    <j:choose>
+                        <j:when test="${ws.hasProject}">
+                            <t:jobLink job="${ws.project}" />
+                        </j:when>
+                        <j:otherwise>
+                            ${%noProject}
+                        </j:otherwise>
+                    </j:choose>
+                </td>
+                <td>
+                    <j:choose>
+                        <j:when test="${ws.isBound}">
+                            ${%yes}
+                        </j:when>
+                        <j:otherwise>
+                            ${%no}
+                        </j:otherwise>
+                    </j:choose>
+                </td>
+                <td>
+                    <j:if test="${!ws.isBuilding}">
+                        <l:task icon="images/24x24/folder-delete.png" href="deleteWorkspace?workspace=${ws.name}" title="${%delete}" permission="${it.computer.CONFIGURE}" post="true" requiresConfirmation="true" confirmationMessage="${%delete.confirm(ws.name, it.computer.displayName)}"/>
+                    </j:if>
+                </td>
+              </tr>
+            </j:forEach>
+            </table>
+        </l:main-panel>
+    </l:layout>
+</j:jelly>
